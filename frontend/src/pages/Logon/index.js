@@ -1,18 +1,42 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useHistory } from 'react-router-dom'
 import { FiLogIn } from 'react-icons/fi'
+
+import api from '../../services/api'
 
 import './styles.css'
 
 function Logon() {
+  const [id, setId] = useState('')
+
+  const history = useHistory();
+
+  async function handleLogin(e) {
+    e.preventDefault()
+
+    try {
+      const { name } = (await api.post('sessions', { id })).data
+
+      console.log(name)
+
+      localStorage.setItem('ongId', id)
+      localStorage.setItem('ongName', name)
+
+      history.push('/profile')
+
+    } catch (err) {
+      alert('Failed to login')
+    }
+  }
+
   return (
     <div className="logon-container">
       <h1 className="logo-name">Be The Hero!</h1>
 
-      <form>
+      <form onSubmit={handleLogin}>
         <h1>Faça seu logon</h1>
 
-        <input placeholder="Sua ID" />
+        <input placeholder="Sua ID" value={id} onChange={e => setId(e.target.value)} />
         <button type="submit" className="button">Entrar</button>
 
         <Link className="back-link" to="/register" >
